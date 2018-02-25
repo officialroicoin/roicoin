@@ -1,3 +1,4 @@
+ 
 pragma solidity ^0.4.18;
 
 
@@ -59,7 +60,13 @@ contract ROICOIN is Token {
     }
 
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool success) {
-        return false;
+       if (balances[_from] >= _value && allowed[_from][msg.sender] >= _value  && balances[_to] + _value > balances[_to] && _value > 0) {
+            balances[_to] += _value;
+            Transfer(_from, _to, _value);
+            balances[_from] -= _value;
+            allowed[_from][msg.sender] -= _value;
+            return true;
+        } else { return false; }
     }
 
     function balanceOf(address _owner) public view returns (uint256 balance) {
@@ -68,10 +75,20 @@ contract ROICOIN is Token {
 
     function approve(address _spender, uint256 _value) public returns (bool success) {
         
-        return false;
+       if (balances[msg.sender] >= _value && balances[msg.sender] >= allowed[msg.sender][_spender] + _value && _value > 0)
+        {
+             allowed[msg.sender][_spender] += _value;
+             Approval(msg.sender, _spender, _value);
+             return true;
+        }
+          else
+        {
+            return false;
+        }
     }
 
     function allowance(address _owner, address _spender) public view returns (uint256 remaining) {
-        return 0;
+            return allowed[_owner][_spender];
     }   
 }
+
